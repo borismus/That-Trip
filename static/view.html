@@ -1,0 +1,203 @@
+<!DOCTYPE html> 
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>View | That Trip</title>
+  
+  <script src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui-1.8.6.custom.min.js"></script>
+  
+  <script src="https://www.google.com/jsapi?key=ABQIAAAACDzvYe7uWvAlivmxsnYh7hT8yLnmi184xlX_BEGwis0Bw22VShSSH0B4EKXteNO8KJPmmghSHy6EZQ"></script>
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script src="js/latlon.js"></script>
+  <script src="js/kml.js"></script>
+  <script src="js/kmldomwalk.js"></script>
+  <script src="js/swfobject.js"></script>
+  <script src="js/downloadify.min.js"></script>
+  
+  <link href='http://fonts.googleapis.com/css?family=Lobster&subset=latin' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Inconsolata&subset=latin' rel='stylesheet' type='text/css'>
+  <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.6.custom.css" rel="stylesheet" />	
+  <link type="text/css" href="css/new.css" rel="stylesheet" />
+<style>
+body {font-family: 'Inconsolata';}
+p {line-height: 150%; color: #333;  font-size: 16px;}
+.field {color: #111;}
+#map3d {height: 450px; width: 600px; float: left; margin-right: 10px; margin-bottom: 10px;}
+#description {}
+#footer {clear: both;}
+</style>
+</head>
+<body>
+<div id="container">  
+  <ul id="nav">
+    <li><a href="/">New Trip</a></li>
+    <li><a href="/list">View Trips</a></li>
+  </ul>
+  <h1>What a Trip...</h1>
+  <p id="title">
+    <span class="download" title="Download KML"></span>
+    <span class="name"></span>
+  </p>
+  <div id="map3d"></div>
+  <div id="description">
+    <p id="sentence"></p>
+    <p id="conclusion"></p>
+    <button id="vote">i like this trip!</button>
+  </div>
+  
+  <div id="footer">
+    <a href="http://www.google.com/moderator/#15/e=4442a&t=4442a.40">feedback</a> | <a href="http://www.borismus.com/kml-tours-google-earth">about</a> | <a href="http://twitter.com/borismus">twitter</a>
+  </div>
+</div>
+<script>
+// Utility method for parsing GET-style parameters
+function getParameterByName( name ) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+};
+
+google.load("earth", "1");
+var ge = null;
+
+$(function() {
+  google.earth.createInstance("map3d", initCallback, failureCallback);
+});
+
+
+var initCallback = function(object) {
+  ge = object;
+  ge.getWindow().setVisibility(true);
+  
+  // Now that Google Earth is loaded, load the KML for this particular map
+  var id = getParameterByName('id');
+  $.getJSON('/trips/' + id + '/', function(data) {
+    showMadlib(data);
+    downloadReady(data.title + '.kml', data.kml, '#title .download');
+    var kmlObject = ge.parseKml(data.kml);
+    ge.getFeatures().appendChild(kmlObject);
+    // Find the tour in the KML
+    walkKmlDom(kmlObject, function() {
+      if (this.getType() == 'KmlTour') {
+        // Set the active tour
+        ge.getTourPlayer().setTour(this);
+        // Play the tour!
+        ge.getTourPlayer().play();
+      }
+    });
+  });
+  
+  $('#vote').click(function() {
+    $.post('/vote/' + id, function() {
+      alert("Thanks for voting!");
+    });
+  });
+};
+
+var failureCallback = function(object) {
+};
+
+var genders = {m: 'he', f: 'she', p: 'they'};
+var modes = {plane: 'flew', train: 'took a train', car: 'drove'};
+
+var showMadlib = function(data) {
+  var titleTemplate = "%(distance)s km (by %(name)s)";
+  $('#title .name').text(format(titleTemplate, {
+    distance: data.distance,
+    name: data.name
+  }));
+  $('h1').text(data.title);
+  
+  var initTemplate = 'On <span class="field">%(date)s</span>, <span class="field">%(name)s</span> went on a <span class="field">%(adjective)s</span> trip. Starting in <span class="field">%(start)s</span>, <span class="field">%(gender)s</span> <span class="field">%(mode)s</span> to <span class="field">%(end)s</span>.';
+  var sentence = format(initTemplate, {
+    date: new Date(data.date).toDateString(),
+    name: data.name,
+    adjective: data.adjective,
+    start: data.places[0].address,
+    gender: genders[data.gender],
+    mode: modes[data.places[1].mode],
+    end: data.places[1].address
+  }) + ' ';
+  
+  $.each(data.places.slice(2,-1), function(index, item) {
+    var randIndex = Math.floor(Math.random() * extraTemplates.length);
+    var template = extraTemplates[randIndex];
+    sentence += format(template, {
+      gender: genders[data.gender],
+      name: data.name,
+      mode: modes[item.mode],
+      place: item.address
+    }) + ' ';
+  });
+  
+  if (data.places.length > 2) {
+    var lastItem = data.places.slice(-1)[0];
+    var finallyTemplate = 'Finally, <span class="field">%(name)s</span> <span class="field">%(mode)s</span> to <span class="field">%(place)s</span>.';
+    sentence += format(finallyTemplate, {
+      name: data.name,
+      mode: modes[lastItem.mode],
+      place: lastItem.address,
+      adjective: data.adjective
+    });
+  }
+  
+  $('#sentence').html(sentence);
+  var conclusion = 'Ahh... <span class="field">%(adjective)s</span> indeed!';
+  $('#conclusion').html(format(conclusion, {adjective: data.adjective}));
+};
+
+var extraTemplates = [
+'Next, <span class="field">%(gender)s</span> <span class="field">%(mode)s</span> to <span class="field">%(place)s</span>.',
+'Then, <span class="field">%(name)s</span> <span class="field">%(mode)s</span> to <span class="field">%(place)s</span>.',
+'After that, <span class="field">%(gender)s</span> <span class="field">%(mode)s</span> to <span class="field">%(place)s</span>.',
+'The next destination was <span class="field">%(place)s</span>; <span class="field">%(gender)s</span> <span class="field">%(mode)s</span>.',
+]
+
+// Create a virtual file download!
+var downloadReady = function(filename, data, selector) {
+  $(selector).downloadify({
+    filename: function(){
+      return filename;
+    },
+    data: function(){ 
+      return data;
+    },
+    onComplete: function(){ 
+      // alert('The file has been saved!'); 
+    },
+    onCancel: function(){ 
+      // alert('You have cancelled the saving of this file.');
+    },
+    onError: function(){ 
+      alert('Error! Damn!'); 
+    },
+    transparent: false,
+    swf: 'media/downloadify.swf',
+    downloadImage: 'images/arrow_down.png',
+    width: 16,
+    height: 16,
+    transparent: true,
+    append: false
+  });
+};
+
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17930798-18']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>

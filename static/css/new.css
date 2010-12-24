@@ -1,0 +1,41 @@
+/*
+* Structural
+*/
+body {font-family: 'Inconsolata'; font-size: 14px;}
+#container {width: 800px; margin: 0 auto;}
+#madlib {background: #ddd; -webkit-border-radius: 15px; padding: 0px 25px 10px 25px;}
+#options {margin-top: 10px;}
+/*
+* Generic
+*/
+h1 {font-family: 'Lobster'; font-size: 60px; text-shadow: #bbb 4px 4px 2px; margin: 0; max-width: 600px;}
+#madlib p {line-height: 400%; color: #333;}
+input {font-size: 16px; font-family: 'Inconsolata'; border: none; background: transparent; border-bottom: 1px solid black; width: 200px; color: #111;}
+.placeholder.date input {width: 100px;}
+.placeholder.title input {font-size: 18px;}
+
+/* 
+* Placeholder labeling 
+*/
+.placeholder label {position: absolute; left: 0; top: 150%; width: 100%; text-align: center; font-size: 12px; color: blue; line-height: 100%;}
+label.error {color: red; font-weight: bold;}
+label.success {color: green;}
+span.placeholder {position: relative;}
+/*
+* First letter decoration
+*/
+span.first-letter {font-size: 50px; font-family: 'Lobster'; position: absolute; top: 20px;}
+span.first-letter-shadow {font-size: 50px; font-family: 'Lobster'; visibility: hidden; margin-right: 3px;}
+
+/*
+* Navigation
+*/
+#nav {float: right; list-style-type: none; -webkit-border-radius: 5px; background: #ddd; padding: 5px;}
+#nav li {float: left; margin: 5px; font-family: 'Lobster'; font-size: 16px;}
+#nav li a {text-decoration: none; }
+#nav li a:hover {text-decoration: underline;}
+
+/*
+* Footer 
+*/
+#footer {margin: 0 auto; text-align: center; border-top: 1px solid #ccc; padding-top: 15px; margin-top: 15px;}

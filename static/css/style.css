@@ -1,0 +1,88 @@
+/* Reset CSS */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/* 
+ *Actual styles begin
+ */
+body {font-family: "Times New Roman", "Times", serif;}
+#container {width: 310px; margin: 20px;}
+#map {position: absolute; left: 370px; right: 0; top: 0; bottom: 0; padding: 0px; border-left: 3px solid #888; background: black;}
+#map3d {width: 600px; height: 400px;}
+h1 {font-size: 40px; font-family: 'Lobster';}
+h2 {margin-top: 25px; font-family: sans-serif;}
+p {margin-top: 5px;}
+#places {margin-top: 10px; max-height: 250px; overflow-y: auto; overflow-x: hidden;}
+#places input {width: 150px;}
+#places select {margin-left: 10px; width: 90px;}
+#places li {padding-left: 15px; margin: 5px 0; background: url(../images/handle.png) no-repeat; cursor: pointer;}
+#places .remove {width: 20px; height: 20px; background: url(../images/x_14x14.png) no-repeat 0 5px; float: right; opacity: 0.2;}
+#places .remove:hover {opacity: 0.7;}
+#places .complete {background: url(../images/check_16x13.png) no-repeat 0 5px; opacity: 1;}
+#places-add {float: right;}
+.ui-state-highlight {background: orange;}
+.section {margin-top: 10px;}
+textarea {width: 98%; height: 50px;}
+
+#info {background: white; width: auto; position: absolute; top: 20px; right: 20px; z-index: 9999; color: black; font-weight: bold; opacity: 0.7; padding: 5px;}
+.info {display: none; }
+
+#links {margin-top: 10px}
+
+#about {background: #222; position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 20px}
+#about .container {width: 500px; margin-left: 20px;}
+#about h3 {font-family: 'Lobster'; font-size: 40px; color: lightblue;}
+#about ol {list-style: decimal;}
+#about li {margin: 25px; font-family: 'Inconsolata'; color: #aaa; font-size: 20px}
+#about a {font-family: 'Lobster'; font-size: 25px; color: blue; text-decoration: underline; cursor: pointer;}
+
+#dialog {display: none}

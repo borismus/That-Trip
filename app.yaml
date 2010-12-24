@@ -1,0 +1,35 @@
+application: thattrip
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /trips/.*
+  script: main.py
+  
+- url: /vote/.*
+  script: main.py
+
+- url: /css
+  static_dir: static/css
+
+- url: /js
+  static_dir: static/js
+
+- url: /media
+  static_dir: static/media
+
+- url: /images
+  static_dir: static/images
+    
+- url: /
+  static_files: static/add.html
+  upload: static/add.html
+  
+- url: /trip
+  static_files: static/view.html
+  upload: static/view.html
+  
+- url: /list
+  static_files: static/list.html
+  upload: static/list.html
